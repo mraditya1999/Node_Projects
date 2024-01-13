@@ -12,7 +12,10 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 app.use(express.static('./public'));
 app.use(express.json());
 
-// routes
+// route
+app.use('/', (req, res) => {
+  res.redirect('/api/v1'); // Redirect requests from the root path (/) to /api/v1
+});
 app.use('/api/v1', authRoutes);
 
 // custom middlewares

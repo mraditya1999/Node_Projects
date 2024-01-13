@@ -11,6 +11,9 @@ app.use(express.json());
 app.use(express.static('./public'));
 
 // routes
+app.use('/', (req, res) => {
+  res.redirect('/api/v1/tasks'); // Redirect requests from the root path (/) to /api/v1/tasks
+});
 app.use('/api/v1/tasks', tasks);
 
 // custom middlewares
