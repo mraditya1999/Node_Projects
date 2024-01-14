@@ -5,8 +5,10 @@ const tasks = require('./routes/tasks');
 const connectToDB = require('./db/connect');
 const notFound = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
+const cors = require('cors');
 
 // middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.static('./public'));
 
