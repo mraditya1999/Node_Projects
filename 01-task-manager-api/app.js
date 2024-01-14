@@ -1,18 +1,29 @@
 require('dotenv').config();
+
+// Swagger
+const swaggerUI = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
+
 const express = require('express');
 const app = express();
-const tasks = require('./routes/tasks');
+const cors = require('cors');
+
 const connectToDB = require('./db/connect');
+const tasks = require('./routes/tasks');
 const notFound = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
-const cors = require('cors');
 
 // middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.static('./public'));
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // routes
+app.get('/', (req, res) => {
+  res.send('<h1>Tasks API</h1><a href="/api-docs">Documentation</a>');
+});
 app.use('/api/v1/tasks', tasks);
 
 // custom middlewares
