@@ -27,8 +27,8 @@ main {
 }
 
 .link-btn {
-  padding: 0.5rem;
-  background: rgb(44, 44, 229);
+  padding: 0.75rem;
+  background: rgb(61, 61, 227);
   font-size: 1.75rem;
   color: white;
   transition: all 0.3s ease-in-out;
