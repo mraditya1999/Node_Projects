@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  title: Task Manager API
+  contact: {}
+  version: '1.0'
+servers:
+  - url: https://zero1-task-manager-api.onrender.com/api/v1
+    variables: {}
+paths:
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Get All Tasks
+      operationId: GetAllTasks
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    post:
+      tags:
+        - Tasks
+      summary: Create Task
+      operationId: CreateTask
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateTaskRequest'
+                - example:
+                    name: Task 3
+                    completed: false
+            example:
+              name: Task 3
+              completed: false
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /tasks/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The task ID
+    get:
+      tags:
+        - Tasks
+      summary: Get Single task
+      operationId: GetSingletask
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    patch:
+      tags:
+        - Tasks
+      summary: Edit Task
+      operationId: EditTask
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/EditTaskRequest'
+                - example:
+                    name: Task 3
+                    completed: false
+            example:
+              name: Task 3
+              completed: false
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    delete:
+      tags:
+        - Tasks
+      summary: Delete Task
+      operationId: DeleteTask
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+components:
+  schemas:
+    CreateTaskRequest:
+      title: CreateTaskRequest
+      required:
+        - name
+        - completed
+      type: object
+      properties:
+        name:
+          type: string
+        completed:
+          type: boolean
+      example:
+        name: Task 3
+        completed: false
+    EditTaskRequest:
+      title: EditTaskRequest
+      required:
+        - name
+        - completed
+      type: object
+      properties:
+        name:
+          type: string
+        completed:
+          type: boolean
+      example:
+        name: Task 3
+        completed: false
+tags:
+  - name: Tasks
+    description: ''
