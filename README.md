@@ -38,16 +38,10 @@ Feel free to explore and contribute to projects that capture your interest and c
 
 Experience the functionality of these projects through their live demos:
 
-1. [Authentication System](https://nodejs-01-auth-system.herokuapp.com)
-2. [Task Manager API](https://nodejs-02-task-manager-api.herokuapp.com)
-3. [Real-time Chat App](https://nodejs-03-realtime-chat.herokuapp.com)
-4. [File Upload Service](https://nodejs-04-file-upload.herokuapp.com)
-5. [RESTful API with Express](https://nodejs-05-restful-api.herokuapp.com")
-6. [Weather App](https://nodejs-06-weather-app.herokuapp.com)
-7. [E-commerce Platform](https://nodejs-07-ecommerce-platform.herokuapp.com)
-8. [Blog Engine](https://nodejs-08-blog-engine.herokuapp.com)
-9. [Payment Gateway Integration](https://nodejs-09-payment-gateway.herokuapp.com)
-10. [GraphQL API](https://nodejs-10-graphql-api.herokuapp.com)
+1. [Task Manager API](https://nodejs-01-auth-system.herokuapp.com)
+2. [Jobs API](https://nodejs-02-task-manager-api.herokuapp.com)
+3. [E-library API](https://nodejs-03-realtime-chat.herokuapp.com)
+4. [E-commerce API](https://nodejs-07-ecommerce-platform.herokuapp.com)
 
 ## Contributing 🥳🎉
 
@@ -55,8 +49,8 @@ I welcome and appreciate your contributions to the Node.js Projects Repository! 
 
 ## Author
 
-- Portfolio - [@mraditya1999](https://www.adityayadav.live)
+- Portfolio - [@mraditya1999](https://adityayadav-dev.netlify.app/)
 - Twitter - [@mraditya1999](https://twitter.com/mraditya1999)
 - Linkedin - [@mraditya1999](https://www.linkedin.com/in/mraditya1999/)
 - Medium - [@mraditya1999](https://medium.com/@mraditya1999)
-- Frontend Mentor - [@mraditya1999](https://www.frontendmentor.io/profile/Aditya-oss-creator)
+- Frontend Mentor - [@mraditya1999](https://www.frontendmentor.io/profile/mrAditya1999)

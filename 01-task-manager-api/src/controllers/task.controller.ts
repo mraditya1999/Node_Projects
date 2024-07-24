@@ -93,7 +93,7 @@ export const updateTask = async (req: IAuthRequest, res: Response) => {
   if (!updatedTask) {
     throw new NotFoundError(`No task with id : ${taskId}`);
   }
-  return res.status(StatusCodes.OK).json({ task });
+  return res.status(StatusCodes.OK).json({ updatedTask });
 };
 
 /**

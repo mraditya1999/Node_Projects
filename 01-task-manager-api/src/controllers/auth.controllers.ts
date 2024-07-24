@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthorizedError } from '../errors';
 import User from '../models/user.models';
+import asyncWrapper from '../middlewares/async-wrapper';
 
 // ==========================================================================================
 //                                   LOGIN USER
@@ -16,7 +17,7 @@ import User from '../models/user.models';
  * @access Public
  */
 // ==========================================================================================
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = asyncWrapper(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -37,7 +38,7 @@ export const loginUser = async (req: Request, res: Response) => {
   return res
     .status(StatusCodes.OK)
     .json({ user: { userId: user._id, name: user.name }, token });
-};
+});
 
 // ==========================================================================================
 //                                 REGISTER USER
@@ -52,10 +53,12 @@ export const loginUser = async (req: Request, res: Response) => {
  * @access Public
  */
 // ==========================================================================================
-export const registerUser = async (req: Request, res: Response) => {
-  const user = await User.create({ ...req.body });
-  const token = user.createJWT();
-  return res
-    .status(StatusCodes.CREATED)
-    .json({ user: { name: user.name }, token });
-};
+export const registerUser = asyncWrapper(
+  async (req: Request, res: Response) => {
+    const user = await User.create({ ...req.body });
+    const token = user.createJWT();
+    return res
+      .status(StatusCodes.CREATED)
+      .json({ user: { name: user.name }, token });
+  }
+);
