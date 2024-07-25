@@ -3,6 +3,7 @@ import { ObjectId } from 'mongoose';
 
 // User
 export interface IUserDocument extends Document {
+  _id: mongoose.Types.ObjectId;
   name: string;
   email: string;
   password: string;
@@ -38,12 +39,19 @@ export interface IReviewDocument extends Document {
 }
 
 // Order
+export interface ISingleOrderItemDocument extends Document {
+  name: string;
+  image: string;
+  price: number;
+  amount: number;
+  product: mongoose.Types.ObjectId;
+}
 export interface IOrderDocument extends Document {
   tax: number;
   shippingFee: number;
   subTotal: number;
   total: number;
-  orderItems: [mongoose.Schema];
+  orderItems: ISingleOrderItemDocument[];
   status: 'pending' | 'failed' | 'paid' | 'delivered' | 'cancelled';
   user: mongoose.Types.ObjectId;
   clientSecret: string;

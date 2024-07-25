@@ -8,10 +8,12 @@ import {
   deleteProduct,
 } from '../controllers/product.controllers';
 import { getSingleProductReviews } from '../controllers/review.controllers';
-
-import { authenticateUser, authorizePermissions } from '../middlewares';
-import { uploadSingleFile } from '../middlewares';
-import { validateImageFile } from '../middlewares';
+import {
+  authenticateUser,
+  authorizePermissions,
+  uploadSingleFile,
+  validateImageFile,
+} from '../middlewares';
 
 router
   .route('/')

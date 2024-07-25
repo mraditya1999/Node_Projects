@@ -1,9 +1,15 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 import { StatusCodes } from 'http-status-codes';
 import { User } from '../models';
 import { CustomError } from '../errors';
-import { createTokenUser, attachCookiesToResponse, IUser } from '../utils';
-import { ICookieTokenPayload } from '../utils';
+import { createTokenUser, attachCookiesToResponse } from '../utils';
+import {
+  ILoginUserRequest,
+  ILogoutUserResponse,
+  IRegisterUserRequest,
+  ITokenUser,
+  IUserResponse,
+} from '../types/auth.types';
 
 // ==========================================================================================
 //                                 REGISTER USER
@@ -18,7 +24,10 @@ import { ICookieTokenPayload } from '../utils';
  * @access Public
  */
 // ==========================================================================================
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (
+  req: Request<Record<string, never>, ITokenUser, IRegisterUserRequest>,
+  res: Response<IUserResponse>
+) => {
   const { name, email, password } = req.body;
 
   const isEmailAlreadyExist = await User.findOne({ email });
@@ -31,14 +40,14 @@ export const registerUser = async (req: Request, res: Response) => {
   const role = isFirstAccount ? 'admin' : 'user';
 
   const user = await User.create({ name, email, password, role });
-  const tokenUser = createTokenUser(user.toObject() as IUser);
+  const tokenUser = createTokenUser(user);
 
   // Create Jwt token
   // const token = user.createJWT({ payload: tokenUser }); // mongoDb Instance OR utils
   // const token = createJWT({ payload: tokenUser }); used in jwt utils
 
   // attach cookie in response
-  attachCookiesToResponse({ res, tokenUser } as ICookieTokenPayload);
+  attachCookiesToResponse({ res, tokenUser });
   return res.status(StatusCodes.CREATED).json({ user: tokenUser });
 };
 
@@ -55,7 +64,10 @@ export const registerUser = async (req: Request, res: Response) => {
  * @access Public
  */
 // ==========================================================================================
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (
+  req: Request<Record<string, never>, IUserResponse, ILoginUserRequest>,
+  res: Response<IUserResponse>
+) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -72,7 +84,7 @@ export const loginUser = async (req: Request, res: Response) => {
     throw new CustomError.UnauthenticatedError('Invalid email or password');
   }
 
-  const tokenUser = createTokenUser(user.toObject() as IUser);
+  const tokenUser = createTokenUser(user);
   // Create Jwt token
   // const token = user.createJWT({ payload: tokenUser }); // user instance OR utils
   // const token = createJWT({ payload: tokenUser });
@@ -94,7 +106,14 @@ export const loginUser = async (req: Request, res: Response) => {
  * @access Public
  */
 // ===========================================================================================
-export const logoutUser = async (req: Request, res: Response) => {
+export const logoutUser = async (
+  req: Request<
+    Record<string, never>,
+    ILogoutUserResponse,
+    Record<string, never>
+  >,
+  res: Response<ILogoutUserResponse>
+) => {
   res.cookie('token', 'logout', {
     httpOnly: true,
     expires: new Date(Date.now()),

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IOrderDocument } from '../types/models.types';
+import { IOrderDocument } from '../types/model.types';
 
 const singleOrderItemSchema = new mongoose.Schema({
   name: { type: String, required: true },

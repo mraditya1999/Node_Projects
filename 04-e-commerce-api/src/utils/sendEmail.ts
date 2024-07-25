@@ -1,5 +1,4 @@
-import { config } from '../config';
-import transporter from '../config/nodemailer';
+import { config,transporter } from '../config';
 
 // ===========================================================================================
 //                                  SEND EMAIL

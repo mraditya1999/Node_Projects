@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { CustomError } from '../errors';
-import { IPayload } from '../utils';
+import { ITokenUser } from '../types/auth.types';
 
 // ===========================================================================================
 //                                  CHECK PERMISSIONS
@@ -19,7 +19,7 @@ import { IPayload } from '../utils';
  */
 // ===========================================================================================
 export const checkPermissions = (
-  requestUser: IPayload | undefined,
+  requestUser: ITokenUser | undefined,
   resourceUserId: mongoose.Types.ObjectId
 ) => {
   if (requestUser?.role === 'admin') return;

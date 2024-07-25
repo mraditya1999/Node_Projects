@@ -1,4 +1,5 @@
 import express from 'express';
+const router = express.Router();
 import { authenticateUser, authorizePermissions } from '../middlewares';
 import {
   getAllUsers,
@@ -8,8 +9,6 @@ import {
   updateUserPassword,
   deleteUser,
 } from '../controllers/user.controllers';
-
-const router = express.Router();
 
 router
   .route('/')

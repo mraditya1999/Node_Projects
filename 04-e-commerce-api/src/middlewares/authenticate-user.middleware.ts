@@ -1,6 +1,7 @@
-import { Response, NextFunction } from 'express';
+import { Response, NextFunction, Request } from 'express-serve-static-core';
 import { CustomError } from '../errors';
-import { verifyJWT, IAuthRequest, IJwtTokenPayload } from '../utils';
+import { verifyJWT } from '../utils';
+import { ITokenUser } from '../types/auth.types';
 
 // ===========================================================================================
 //                                  AUTHENTICATE USER
@@ -17,7 +18,7 @@ import { verifyJWT, IAuthRequest, IJwtTokenPayload } from '../utils';
  */
 // ===========================================================================================
 export const authenticateUser = async (
-  req: IAuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -36,9 +37,8 @@ export const authenticateUser = async (
   }
 
   try {
-    const payload = verifyJWT({ token }) as IJwtTokenPayload;
-    const { userId, name, role } = payload.payload;
-    req.user = { userId, name, role };
+    const payload = verifyJWT({ token }) as ITokenUser;
+    req.user = payload;
     next();
   } catch (error) {
     throw new CustomError.UnauthenticatedError('Authentication Invalid');
@@ -60,7 +60,7 @@ export const authenticateUser = async (
  */
 // ===========================================================================================
 export const authorizePermissions = (...roles: (string | undefined)[]) => {
-  return (req: IAuthRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     // Check if the user's role is included in the allowed roles
     if (!roles.includes(req.user?.role)) {
       throw new CustomError.UnauthorizedError(

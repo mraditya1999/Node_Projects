@@ -1,4 +1,5 @@
 import express from 'express';
+const router = express.Router();
 import {
   uploadFiles,
   uploadImage,
@@ -7,13 +8,12 @@ import {
 import {
   authenticateUser,
   authorizePermissions,
+  validateImageFile,
   uploadMultipleFile,
   uploadSingleFile,
   validateImageAndPdfFiles,
   validatePdfFile,
 } from '../middlewares';
-import { validateImageFile } from '../middlewares';
-const router = express.Router();
 
 router
   .route('/uploadImage')

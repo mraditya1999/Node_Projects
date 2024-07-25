@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
 import { config } from '../config';
-import { IUserDocument } from '../types/models.types';
+import { IUserDocument } from '../types/model.types';
 
 const UserSchema = new mongoose.Schema<IUserDocument>(
   {

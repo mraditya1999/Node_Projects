@@ -1,9 +1,19 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 import { StatusCodes } from 'http-status-codes';
 import { CustomError } from '../errors';
 import { Order, Product } from '../models';
 import { checkPermissions } from '../utils';
-import { IAuthRequest, IOrder, IOrderItem } from '../utils/types';
+import {
+  ICreateOrderRequest,
+  ICreateOrderResponse,
+  IGetAllOrdersResponse,
+  IGetCurrentUserOrdersResponse,
+  IGetSingleOrderRequest,
+  IGetSingleOrderResponse,
+  IOrderItem,
+  IUpdateOrderRequest,
+  IUpdateOrderResponse,
+} from '../types/order.types';
 
 // ===========================================================================================
 //                                   FAKE STRIPE API
@@ -27,7 +37,7 @@ const fakeStripeApi = ({
   amount: number;
 } => {
   const clientSecret = 'someRandomId';
-  console.log(currency)
+  console.log(currency);
   return { clientSecret, amount };
 };
 
@@ -40,8 +50,15 @@ const fakeStripeApi = ({
  * @route POST /api/v1/orders
  * @access Private
  */
-export const createOrder = async (req: IAuthRequest, res: Response) => {
-  const { items: cartItems, tax, shippingFee }: IOrder = req.body;
+export const createOrder = async (
+  req: Request<
+    Record<string, never>,
+    ICreateOrderResponse,
+    ICreateOrderRequest
+  >,
+  res: Response
+) => {
+  const { items: cartItems, tax, shippingFee } = req.body;
 
   if (!cartItems || cartItems.length < 1) {
     throw new CustomError.BadRequestError('No cart items provided');
@@ -108,7 +125,16 @@ export const createOrder = async (req: IAuthRequest, res: Response) => {
  * @route PATCH /api/v1/orders/:id
  * @access Private
  */
-export const updateOrder = async (req: IAuthRequest, res: Response) => {
+export const updateOrder = async (
+  req: Request<
+    {
+      id: string;
+    },
+    IUpdateOrderResponse,
+    IUpdateOrderRequest
+  >,
+  res: Response<IUpdateOrderResponse>
+) => {
   const { id: orderId } = req.params;
   const { paymentIntentId } = req.body;
 
@@ -133,7 +159,14 @@ export const updateOrder = async (req: IAuthRequest, res: Response) => {
  * @route GET /api/v1/orders
  * @access Private
  */
-export const getAllOrders = async (req: Request, res: Response) => {
+export const getAllOrders = async (
+  req: Request<
+    Record<string, never>,
+    Record<string, never>,
+    Record<string, never>
+  >,
+  res: Response<IGetAllOrdersResponse>
+) => {
   const orders = await Order.find({});
   return res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
@@ -147,7 +180,14 @@ export const getAllOrders = async (req: Request, res: Response) => {
  * @route GET /api/v1/orders/:id
  * @access Private
  */
-export const getSingleOrder = async (req: IAuthRequest, res: Response) => {
+export const getSingleOrder = async (
+  req: Request<
+    Record<string, never>,
+    IGetSingleOrderResponse,
+    IGetSingleOrderRequest
+  >,
+  res: Response<IGetSingleOrderResponse>
+) => {
   const { id: orderId } = req.params;
   const order = await Order.findOne({ _id: orderId });
 
@@ -169,8 +209,12 @@ export const getSingleOrder = async (req: IAuthRequest, res: Response) => {
  * @access Private
  */
 export const getCurrentUserOrders = async (
-  req: IAuthRequest,
-  res: Response
+  req: Request<
+    Record<string, never>,
+    Record<string, never>,
+    Record<string, never>
+  >,
+  res: Response<IGetCurrentUserOrdersResponse>
 ) => {
   const orders = await Order.find({ user: req.user?.userId });
   return res.status(StatusCodes.OK).json({ orders, count: orders.length });

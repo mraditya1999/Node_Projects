@@ -1,7 +1,17 @@
-import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import path from 'node:path';
+import { Request, Response } from 'express-serve-static-core';
+import { StatusCodes } from 'http-status-codes';
 import { uploadOnCloudinary } from '../utils/cloudinary';
+import {
+  IUploadedFile,
+  IUploadFileErrorResponse,
+  IUploadFilesRequest,
+  IUploadFilesResponse,
+  IUploadImageRequest,
+  IUploadImageResponse,
+  IUploadPdfRequest,
+  IUploadPdfResponse,
+} from '../types/upload.types';
 
 // ===========================================================================================
 //                                   UPLOAD IMAGE
@@ -18,7 +28,14 @@ import { uploadOnCloudinary } from '../utils/cloudinary';
  * @access Private/Admin
  */
 // ===========================================================================================
-export const uploadImage = async (req: Request, res: Response) => {
+export const uploadImage = async (
+  req: Request<
+    Record<string, never>,
+    IUploadImageResponse | IUploadFileErrorResponse,
+    IUploadImageRequest
+  >,
+  res: Response<IUploadImageResponse | IUploadFileErrorResponse>
+) => {
   // Check if a file is uploaded
   if (!req.file) {
     return res
@@ -58,9 +75,16 @@ export const uploadImage = async (req: Request, res: Response) => {
  * @access Private/Admin
  */
 // ===========================================================================================
-export const uploadPdf = async (req: Request, res: Response) => {
-   // Check if a file is uploaded
-   if (!req.file) {
+export const uploadPdf = async (
+  req: Request<
+    Record<string, never>,
+    IUploadPdfResponse | IUploadFileErrorResponse,
+    IUploadPdfRequest
+  >,
+  res: Response<IUploadPdfResponse | IUploadFileErrorResponse>
+) => {
+  // Check if a file is uploaded
+  if (!req.file) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: 'No file uploaded' });
@@ -109,28 +133,48 @@ export const uploadPdf = async (req: Request, res: Response) => {
  * @access Private/Admin
  */
 // ===========================================================================================
-export const uploadFiles = async (req: Request, res: Response) => {
+export const uploadFiles = async (
+  req: Request<
+    Record<string, never>,
+    IUploadFilesResponse | IUploadFileErrorResponse,
+    IUploadFilesRequest
+  >,
+  res: Response<IUploadFilesResponse | IUploadFileErrorResponse>
+) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
   // Check if files exist
   if (!files || (!files.image && !files.pdf)) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: 'No files uploaded' });
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ message: 'No files uploaded' });
   }
 
-  const uploadedFiles: unknown[] = [];
+  const uploadedFiles: IUploadedFile[] = [];
 
   // Process image file
   if (files.image && files.image.length > 0) {
     const imageFile = files.image[0];
-    const localImagePath = path.join(__dirname, '../../public/uploads', imageFile.filename);
-    const cloudinaryImageResult = await uploadOnCloudinary(localImagePath, 'Images');
+    const localImagePath = path.join(
+      __dirname,
+      '../../public/uploads',
+      imageFile.filename
+    );
+    const cloudinaryImageResult = await uploadOnCloudinary(
+      localImagePath,
+      'Images'
+    );
     uploadedFiles.push({ type: 'image', file: cloudinaryImageResult });
   }
 
   // Process PDF file
   if (files.pdf && files.pdf.length > 0) {
     const pdfFile = files.pdf[0];
-    const localPdfPath = path.join(__dirname, '../../public/uploads', pdfFile.filename);
+    const localPdfPath = path.join(
+      __dirname,
+      '../../public/uploads',
+      pdfFile.filename
+    );
     const cloudinaryPdfResult = await uploadOnCloudinary(localPdfPath, 'PDFs');
     uploadedFiles.push({ type: 'pdf', file: cloudinaryPdfResult });
   }

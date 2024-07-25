@@ -1,13 +1,23 @@
-import { Response } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 import { StatusCodes } from 'http-status-codes';
 import { User } from '../models';
 import { CustomError } from '../errors';
-import { IAuthRequest, IUser } from '../utils';
 import {
   attachCookiesToResponse,
   checkPermissions,
   createTokenUser,
 } from '../utils';
+import {
+  IDeleteUserRequest,
+  IDeleteUserResponse,
+  IGetAllUsersResponse,
+  IGetSingleUserResponse,
+  IShowCurrentUserResponse,
+  IUpdateUserPasswordRequest,
+  IUpdateUserPasswordResponse,
+  IUpdateUserRequest,
+  IUpdateUserResponse,
+} from '../types/user.types';
 
 // ===========================================================================================
 //                                   GET ALL USERS
@@ -22,7 +32,14 @@ import {
  * @access Private/Admin
  */
 // ===========================================================================================
-export const getAllUsers = async (req: IAuthRequest, res: Response) => {
+export const getAllUsers = async (
+  req: Request<
+    Record<string, never>,
+    IGetAllUsersResponse,
+    Record<string, never>
+  >,
+  res: Response<IGetAllUsersResponse>
+) => {
   const users = await User.find({ role: 'user' }).select('-password');
   return res.status(StatusCodes.OK).json({ users });
 };
@@ -41,7 +58,10 @@ export const getAllUsers = async (req: IAuthRequest, res: Response) => {
  * @access Private/Admin
  */
 // ===========================================================================================
-export const getSingleUser = async (req: IAuthRequest, res: Response) => {
+export const getSingleUser = async (
+  req: Request<{ id: string }, IGetSingleUserResponse, Record<string, never>>,
+  res: Response<IGetSingleUserResponse>
+) => {
   const { id: userId } = req.params;
   const user = await User.findOne({ _id: userId }).select('-password');
 
@@ -67,7 +87,14 @@ export const getSingleUser = async (req: IAuthRequest, res: Response) => {
  * @access Private
  */
 // ===========================================================================================
-export const showCurrentUser = async (req: IAuthRequest, res: Response) => {
+export const showCurrentUser = async (
+  req: Request<
+    Record<string, never>,
+    IShowCurrentUserResponse,
+    Record<string, never>
+  >,
+  res: Response<IShowCurrentUserResponse>
+) => {
   return res.status(StatusCodes.OK).json({ user: req.user });
 };
 
@@ -85,7 +112,10 @@ export const showCurrentUser = async (req: IAuthRequest, res: Response) => {
  * @access Private
  */
 // ===========================================================================================
-export const updateUser = async (req: IAuthRequest, res: Response) => {
+export const updateUser = async (
+  req: Request<Record<string, never>, IUpdateUserResponse, IUpdateUserRequest>,
+  res: Response<IUpdateUserResponse>
+) => {
   const { name, email } = req.body;
 
   if (!name || !email) {
@@ -106,7 +136,7 @@ export const updateUser = async (req: IAuthRequest, res: Response) => {
     throw new CustomError.NotFoundError(`No user with id : ${userId}`);
   }
 
-  const tokenUser = createTokenUser(updatedUser.toObject() as IUser);
+  const tokenUser = createTokenUser(updatedUser);
   attachCookiesToResponse({ res, tokenUser });
 
   return res.status(StatusCodes.OK).json({ user: tokenUser });
@@ -127,7 +157,14 @@ export const updateUser = async (req: IAuthRequest, res: Response) => {
  * @access Private
  */
 // ===========================================================================================
-export const updateUserPassword = async (req: IAuthRequest, res: Response) => {
+export const updateUserPassword = async (
+  req: Request<
+    Record<string, never>,
+    IUpdateUserPasswordResponse,
+    IUpdateUserPasswordRequest
+  >,
+  res: Response<IUpdateUserPasswordResponse>
+) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
@@ -165,7 +202,10 @@ export const updateUserPassword = async (req: IAuthRequest, res: Response) => {
  * @access Private/Admin
  */
 // ===========================================================================================
-export const deleteUser = async (req: IAuthRequest, res: Response) => {
+export const deleteUser = async (
+  req: Request<{ id: string }, IDeleteUserResponse, IDeleteUserRequest>,
+  res: Response<IDeleteUserResponse>
+) => {
   const { id: userId } = req.params;
   const user = await User.findByIdAndDelete(userId);
 

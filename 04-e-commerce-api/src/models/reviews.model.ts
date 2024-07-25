@@ -1,5 +1,5 @@
 import mongoose, { Model } from 'mongoose';
-import { IReviewDocument } from '../types/models.types';
+import { IReviewDocument } from '../types/model.types';
 
 export interface IReviewModel extends Model<IReviewDocument> {
   calculateAverageAndRating(productId: mongoose.Types.ObjectId): Promise<void>;

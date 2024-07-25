@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ErrorRequestHandler } from 'express';
+import { ErrorRequestHandler } from 'express-serve-static-core';
 import { Error as MongooseError } from 'mongoose';
 import { StatusCodes } from 'http-status-codes';
 

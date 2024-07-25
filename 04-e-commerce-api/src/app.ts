@@ -1,12 +1,14 @@
-import express from 'express';
+// imports
 import 'express-async-errors';
-// extra security packages
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import { rateLimit } from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
+import { rateLimit } from 'express-rate-limit';
+
+// custom imports
 import { config } from './config';
 import { notFoundMiddleware, errorHandlerMiddleware } from './middlewares';
 import {
@@ -19,6 +21,7 @@ import {
   orderRoutes,
 } from './routes';
 
+// configurations
 const app = express();
 const corsOptions = {
   origin: config.frontendUrl,
@@ -30,16 +33,16 @@ const rateLimitOptions = {
 };
 
 // middlewares
+app.set('trust proxy', 1);
+app.use(morgan('dev'));
 app.use(helmet());
+app.use(mongoSanitize()); // sanitize data before saving to database
 app.use(cors(corsOptions));
 app.use(rateLimit(rateLimitOptions));
-app.use(morgan('dev'));
 app.use(express.json()); // access json data inside req.body
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(config.jwtSecret)); // access cookie data inside req.body
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public')); // static data
-app.use(mongoSanitize()); // sanitize data before saving to database
-app.set('trust proxy', 1);
 
 // routes
 app.use('/api/v1/auth', authRoutes);

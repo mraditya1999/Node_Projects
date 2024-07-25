@@ -1,9 +1,18 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 import { StatusCodes } from 'http-status-codes';
 import Review from '../models/reviews.model';
 import { CustomError } from '../errors';
-import { checkPermissions, IAuthRequest } from '../utils';
+import { checkPermissions } from '../utils';
 import { Product } from '../models';
+import {
+  ICreateReviewRequest,
+  ICreateReviewResponse,
+  IDeleteReviewResponse,
+  IGetReviewsResponse,
+  IGetSingleReviewResponse,
+  IUpdateReviewRequest,
+  IUpdateReviewResponse,
+} from '../types/review.types';
 
 // ===========================================================================================
 //                                    GET ALL REVIEWS
@@ -18,7 +27,14 @@ import { Product } from '../models';
  * @access Public
  */
 // ===========================================================================================
-export const getAllReviews = async (req: Request, res: Response) => {
+export const getAllReviews = async (
+  req: Request<
+    Record<string, never>,
+    IGetReviewsResponse,
+    Record<string, never>
+  >,
+  res: Response<IGetReviewsResponse>
+) => {
   const reviews = await Review.find({})
     .populate({
       path: 'product',
@@ -45,7 +61,10 @@ export const getAllReviews = async (req: Request, res: Response) => {
  * @access Public
  */
 // ===========================================================================================
-export const getSingleReview = async (req: Request, res: Response) => {
+export const getSingleReview = async (
+  req: Request<{ id: string }, IGetSingleReviewResponse, Record<string, never>>,
+  res: Response<IGetSingleReviewResponse>
+) => {
   const { id: reviewId } = req.params;
   const review = await Review.findOne({ _id: reviewId })
     .populate({
@@ -78,7 +97,10 @@ export const getSingleReview = async (req: Request, res: Response) => {
  * @access Public
  */
 // ===========================================================================================
-export const getSingleProductReviews = async (req: Request, res: Response) => {
+export const getSingleProductReviews = async (
+  req: Request<{ id: string }, IGetReviewsResponse, Record<string, never>>,
+  res: Response<IGetReviewsResponse>
+) => {
   const { id: productId } = req.params;
   const reviews = await Review.find({ product: productId });
   return res.status(StatusCodes.OK).json({ reviews, count: reviews.length });
@@ -99,7 +121,14 @@ export const getSingleProductReviews = async (req: Request, res: Response) => {
  */
 // ===========================================================================================
 
-export const createReview = async (req: IAuthRequest, res: Response) => {
+export const createReview = async (
+  req: Request<
+    Record<string, never>,
+    ICreateReviewResponse,
+    ICreateReviewRequest
+  >,
+  res: Response<ICreateReviewResponse>
+) => {
   const { product: productId } = req.body;
   const userId = req.user?.userId;
 
@@ -138,7 +167,10 @@ export const createReview = async (req: IAuthRequest, res: Response) => {
  * @access Private
  */
 // ===========================================================================================
-export const updateReview = async (req: IAuthRequest, res: Response) => {
+export const updateReview = async (
+  req: Request<{ id: string }, IUpdateReviewResponse, IUpdateReviewRequest>,
+  res: Response<IUpdateReviewResponse>
+) => {
   const { id: reviewId } = req.params;
   const { rating, title, comment } = req.body;
 
@@ -152,9 +184,16 @@ export const updateReview = async (req: IAuthRequest, res: Response) => {
 
   checkPermissions(req.user, review.user);
 
-  review.rating = rating;
-  review.title = title;
-  review.comment = comment;
+  // Update only provided fields
+  if (rating !== undefined) {
+    review.rating = rating;
+  }
+  if (title !== undefined) {
+    review.title = title;
+  }
+  if (comment !== undefined) {
+    review.comment = comment;
+  }
 
   await review.save();
   return res.status(StatusCodes.OK).json({ review });
@@ -174,7 +213,10 @@ export const updateReview = async (req: IAuthRequest, res: Response) => {
  * @access Private
  */
 // ===========================================================================================
-export const deleteReview = async (req: IAuthRequest, res: Response) => {
+export const deleteReview = async (
+  req: Request<{ id: string }, IDeleteReviewResponse, Record<string, never>>,
+  res: Response<IDeleteReviewResponse>
+) => {
   const { id: reviewId } = req.params;
 
   const review = await Review.findOne({ _id: reviewId });

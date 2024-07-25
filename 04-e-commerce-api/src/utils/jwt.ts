@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { ICookieTokenPayload, IJwtTokenPayload } from '../utils';
 import { config } from '../config';
+import { ITokenUser, ICookieTokenPayload } from '../types/auth.types';
 
 // ===========================================================================================
 //                                  CREATE JWT TOKEN
@@ -11,7 +11,7 @@ import { config } from '../config';
  * @param {IJwtTokenPayload} payload - The payload to include in the JWT.
  * @returns {string} - The generated JWT token as a string.
  */
-export const createJWT = (payload: IJwtTokenPayload): string => {
+export const createJWT = ({ payload }: { payload: ITokenUser }): string => {
   const token = jwt.sign(payload, config.jwtSecret, {
     expiresIn: config.jwtLifetime,
   });

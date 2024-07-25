@@ -1,4 +1,4 @@
-import { IUser } from '../utils';
+import { IUserDocument } from '../types/model.types';
 
 // ===========================================================================================
 //                                  CREATE TOKEN USER
@@ -9,6 +9,7 @@ import { IUser } from '../utils';
  * @param {IUser} user - The user object
  * @returns {{ userId: string, name: string, role: string }} - The token user object
  */
-export const createTokenUser = (user: IUser) => {
+export const createTokenUser = (user: IUserDocument) => {
+  user.body;
   return { userId: user._id.toString(), name: user.name, role: user.role };
 };

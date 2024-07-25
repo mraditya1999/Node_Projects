@@ -1,22 +1,38 @@
-import { Response } from 'express';
+import { Request, Response } from 'express-serve-static-core';
 import { StatusCodes } from 'http-status-codes';
 import { Product } from '../models';
 import { CustomError } from '../errors';
 import {
-  IQuery,
-  IQueryObject,
-  IAuthRequest,
   uploadOnCloudinary,
   getPublicIdFromUrl,
   deleteFromCloudinary,
 } from '../utils';
+import {
+  ICreateProductRequest,
+  ICreateProductResponse,
+  IGetAllProductsResponse,
+  IDeleteProductResponse,
+  IGetSingleProductResponse,
+  IQuery,
+  IQueryObject,
+  IUpdateProductRequest,
+  IUpdateProductResponse,
+} from '../types/product.types';
 
 /**
  * @description Get all products with optional query filters, sorting, and pagination
  * @route GET /api/v1/products
  * @access Public
  */
-export const getAllProducts = async (req: IAuthRequest, res: Response) => {
+export const getAllProducts = async (
+  req: Request<
+    Record<string, never>,
+    IGetAllProductsResponse,
+    Record<string, never>,
+    IQuery
+  >,
+  res: Response<IGetAllProductsResponse>
+) => {
   const { featured, company, name, sort, fields, numericFilters } =
     req.query as IQuery;
 
@@ -88,9 +104,15 @@ export const getAllProducts = async (req: IAuthRequest, res: Response) => {
  * @route GET /api/v1/products/:id
  * @access Public
  */
-export const getSingleProduct = async (req: IAuthRequest, res: Response) => {
+export const getSingleProduct = async (
+  req: Request<
+    { id: string },
+    IGetSingleProductResponse,
+    Record<string, never>
+  >,
+  res: Response<IGetSingleProductResponse>
+) => {
   const { id: productId } = req.params;
-
   const product = await Product.findOne({ _id: productId }).populate('reviews');
 
   if (!product) {
@@ -105,7 +127,14 @@ export const getSingleProduct = async (req: IAuthRequest, res: Response) => {
  * @route POST /api/v1/products
  * @access Private
  */
-export const createProduct = async (req: IAuthRequest, res: Response) => {
+export const createProduct = async (
+  req: Request<
+    Record<string, never>,
+    ICreateProductResponse,
+    ICreateProductRequest
+  >,
+  res: Response<ICreateProductResponse>
+) => {
   if (!req.file) {
     throw new CustomError.BadRequestError('Product image is required');
   }
@@ -132,7 +161,10 @@ export const createProduct = async (req: IAuthRequest, res: Response) => {
  * @route PATCH /api/v1/products/:id
  * @access Private
  */
-export const updateProduct = async (req: IAuthRequest, res: Response) => {
+export const updateProduct = async (
+  req: Request<{ id: string }, IUpdateProductResponse, IUpdateProductRequest>,
+  res: Response
+) => {
   const { id: productId } = req.params;
 
   // Find the existing product
@@ -180,7 +212,10 @@ export const updateProduct = async (req: IAuthRequest, res: Response) => {
  * @route DELETE /api/v1/products/:id
  * @access Private
  */
-export const deleteProduct = async (req: IAuthRequest, res: Response) => {
+export const deleteProduct = async (
+  req: Request<{ id: string }, IDeleteProductResponse, Record<string, never>>,
+  res: Response<IDeleteProductResponse>
+) => {
   const { id: productId } = req.params;
 
   // Find the existing product
